@@ -2,6 +2,18 @@
 import Metronome from '@metronome/sdk';
 
 const CUSTOM_SPEND_THRESHOLD_ALERT_NAME = "CUSTOM_SPEND_THRESHOLD_ALERT";
+const DARK_DEFAULT = {
+  Gray_dark: "#fb00f5",
+  Gray_medium: "#b050e8",
+  Gray_light: "#fb00f5",
+  Gray_extralight: "#fb00f5",
+  White: "#000000",
+  Primary_medium: "#ffffff",
+  Primary_light: "#fb00f5",
+  Primary_green: "#8459ca",
+  Primary_red: "#4baaf2",
+}
+
 
 export async function createMetronomeEmbeddableLink(
   api_key: string, 
@@ -11,30 +23,14 @@ export async function createMetronomeEmbeddableLink(
 ) {
   if (api_key === "") api_key = process.env['METRONOME_API_TOKEN'] || "";
   if (customer_id === "") customer_id = process.env['METRONOME_CUSTOMER_ID'] || "";
-  console.log(api_key, customer_id)
+  
   try {
     const client = new Metronome({
       bearerToken: api_key
     }); 
-    console.log('res', resolvedTheme)
     let color_overrides: Array<any> = [];
     if (resolvedTheme === "dark") {
-      color_overrides = [
-      //   {
-      //   name:"White",
-      //   value:"#000062",
-      // },
-      // {
-      //   name:"Primary_medium",
-      //   value:"#9732a8", // #000062
-      // },{
-      //   name:"Primary_light",
-      //   value:"#000062",
-      // },{
-      //   name:"Gray_dark",
-      //   value:"#000",
-      // }
-    ];
+      color_overrides = Object.entries(DARK_DEFAULT).map((el: Array<any>) => {return { name: el[0], value :el[1]}});
     }
     const response = await client.dashboards.getEmbeddableURL({ 
       customer_id,
@@ -97,20 +93,20 @@ export async function fetchMetronomeCustomerBalance(api_key: string, customer_id
 
 }
 
-export async function fetchMetronomeBillableMetrics(api_key: string, customer_id: string){
-  if (api_key === "") api_key = process.env['METRONOME_API_TOKEN'] || "";
-  if (customer_id === "") customer_id = process.env['METRONOME_CUSTOMER_ID'] || "";
+// export async function fetchMetronomeBillableMetrics(api_key: string, customer_id: string){
+//   if (api_key === "") api_key = process.env['METRONOME_API_TOKEN'] || "";
+//   if (customer_id === "") customer_id = process.env['METRONOME_CUSTOMER_ID'] || "";
 
-  try {
-    const client = new Metronome({
-      bearerToken: api_key
-    }); 
-    const response = await client.customers.listBillableMetrics(customer_id)
-    return { status: "success", result: response.data };
-  }catch(error){
-    return { status: "error"}
-  }
-}
+//   try {
+//     const client = new Metronome({
+//       bearerToken: api_key
+//     }); 
+//     const response = await client.customers.listBillableMetrics(customer_id)
+//     return { status: "success", result: response.data };
+//   }catch(error){
+//     return { status: "error"}
+//   }
+// }
 
 // export async function fetchMetronomeUsage(
 //   api_key: string, 
@@ -263,7 +259,6 @@ export async function fetchMetronomeCustomers (api_key: string) {
     const client = new Metronome({ bearerToken: api_key }); 
     let response = await client.customers.list();
     let data = response.data, is_next_page = true;
-    console.log(data, response.next_page)
     while(is_next_page === true){
       if(response.next_page){
         response = await client.customers.list({next_page: response.next_page})

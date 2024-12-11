@@ -14,7 +14,7 @@ export function CurrentInvoiceTotal() {
         <div className={"relative flex flex-col overflow-hidden rounded-3xl border shadow-sm"}>
             <div className="min-h-[100%] items-start space-y-4 bg-muted/50 p-6">
                 <p className="flex font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                    Total Usage Costs
+                    Total Current Invoice
                 </p>
          
                 <div className="w-full text-3xl font-semibold leading-6">

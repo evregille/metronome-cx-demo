@@ -70,13 +70,10 @@ export default function Costs() {
       <div className={"relative flex flex-col overflow-hidden rounded-3xl border shadow-sm"}>
             <div className="min-h-[150px] items-start space-y-4 bg-muted/50 p-6">
                 <p className="flex font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                    Costs
+                    Daily Breakdown Costs
                 </p>
                 <div className="grid gap-2">
                   <div className="grid grid-cols-3 gap-4 sm:grid-cols-3 xl:grid-cols-3">
-                    <div className="text-base text-muted-foreground">
-                      Granularity
-                    </div>
                     <div className="text-base text-muted-foreground">
                       Filter By Product
                     </div>
@@ -86,25 +83,6 @@ export default function Costs() {
                   </div>
                   
                   <div className="grid grid-cols-3 gap-4 sm:grid-cols-3 xl:grid-cols-3">
-                    
-                    <Select
-                      value={'Day'} 
-                      onValueChange={ () => {}}
-                    >
-                      <SelectTrigger aria-label="WindowSize">
-                        <SelectValue placeholder="None"/>
-                      </SelectTrigger>
-                      <SelectContent >
-                          <SelectItem value={'Day'}>
-                                {"Day"}
-                          </SelectItem>
-                          <SelectItem value={'Hour'}>
-                                {"Hour"}
-                          </SelectItem>
-                          
-                      </SelectContent>
-                    </Select>
-                    
                     <Select 
                       value={selectedProduct} 
                       onValueChange={handleSelectProduct}

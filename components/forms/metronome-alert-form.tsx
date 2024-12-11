@@ -37,7 +37,7 @@ export function MetronomeAlertForm() {
             type="submit"
             variant={true ? "default" : "disable"}
             disabled={false}
-            className="w-[67px] shrink-0 px-0 sm:w-[130px]"
+            className="w-[100px] shrink-0 px-3 sm:w-[150px]"
           >Create Notification 
           </Button>
         </div>
