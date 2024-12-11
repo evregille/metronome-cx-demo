@@ -1,7 +1,5 @@
 const { withContentlayer } = require("next-contentlayer2");
 
-import("./env.mjs");
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -21,10 +19,7 @@ const nextConfig = {
         hostname: "randomuser.me",
       },
     ],
-  },
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client"],
-  },
+  }
 };
 
 module.exports = withContentlayer(nextConfig);

@@ -2,8 +2,6 @@ import { Metadata } from "next";
 import { clsx, type ClassValue } from "clsx";
 import ms from "ms";
 import { twMerge } from "tailwind-merge";
-
-import { env } from "@/env.mjs";
 import { siteConfig } from "@/config/site";
 
 export function cn(...inputs: ClassValue[]) {
@@ -13,7 +11,6 @@ export function cn(...inputs: ClassValue[]) {
 export function constructMetadata({
   title = siteConfig.name,
   description = siteConfig.description,
-  image = siteConfig.ogImage,
   icons = "/favicon.ico",
   noIndex = false,
 }: {
@@ -46,7 +43,6 @@ export function constructMetadata({
     openGraph: {
       type: "website",
       locale: "en_US",
-      url: siteConfig.url,
       title,
       description,
       siteName: title,
@@ -55,7 +51,6 @@ export function constructMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [image],
       creator: "@miickasmt",
     },
     icons,
@@ -144,11 +139,6 @@ export const getBlurDataURL = async (url: string | null) => {
   if (!url) {
     return "data:image/webp;base64,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   }
-
-  if (url.startsWith("/_static/")) {
-    url = `${siteConfig.url}${url}`;
-  }
-
   try {
     const response = await fetch(
       `https://wsrv.nl/?url=${url}&w=50&h=50&blur=5`,
