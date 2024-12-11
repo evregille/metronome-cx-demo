@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import type { Icon } from "lucide-react";
 
 import { Icons } from "@/components/shared/icons";
@@ -34,7 +33,6 @@ export type NavItem = {
   badge?: number;
   disabled?: boolean;
   external?: boolean;
-  authorizeOnly?: UserRole;
   icon?: keyof typeof Icons;
 };
 
@@ -47,7 +45,6 @@ export type MarketingConfig = {
 export type SidebarNavItem = {
   title: string;
   items: NavItem[];
-  authorizeOnly?: UserRole;
   icon?: keyof typeof Icons;
 };
 
@@ -73,7 +70,7 @@ export type SubscriptionPlan = {
 };
 
 export type UserSubscriptionPlan = SubscriptionPlan &
-  Pick<User, "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId"> & {
+  Pick<"stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId"> & {
     stripeCurrentPeriodEnd: number;
     isPaid: boolean;
     interval: "month" | "year" | null;
