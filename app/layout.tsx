@@ -1,13 +1,12 @@
 import "@/styles/globals.css";
 
 import { fontGeist, fontHeading, fontSans, fontUrban } from "@/assets/fonts";
-// import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 
 import { cn, constructMetadata } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@/components/analytics";
-import ModalProvider from "@/components/modals/providers";
+// import ModalProvider from "@/components/modals/providers";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 
 interface RootLayoutProps {
@@ -36,7 +35,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
             enableSystem
             disableTransitionOnChange
           >
-            <ModalProvider>{children}</ModalProvider>
+            {/* <ModalProvider>{children}</ModalProvider> */}
+            {children}
             <Analytics />
             <Toaster richColors closeButton />
             <TailwindIndicator />

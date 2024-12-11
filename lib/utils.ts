@@ -59,8 +59,6 @@ export function constructMetadata({
       creator: "@miickasmt",
     },
     icons,
-    metadataBase: new URL(siteConfig.url),
-    manifest: `${siteConfig.url}/site.webmanifest`,
     ...(noIndex && {
       robots: {
         index: false,
@@ -77,10 +75,6 @@ export function formatDate(input: string | number): string {
     day: "numeric",
     year: "numeric",
   });
-}
-
-export function absoluteUrl(path: string) {
-  return `${env.NEXT_PUBLIC_APP_URL}${path}`;
 }
 
 // Utils from precedent.dev
