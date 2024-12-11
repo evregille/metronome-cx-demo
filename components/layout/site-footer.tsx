@@ -4,8 +4,6 @@ import Link from "next/link";
 import { footerLinks } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-import { NewsletterForm } from "../forms/newsletter-form";
-
 export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
   return (
     <footer className={cn("border-t", className)}>
@@ -30,7 +28,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
           </div>
         ))}
         <div className="col-span-full flex flex-col items-end sm:col-span-1 md:col-span-2">
-          <NewsletterForm />
+        
         </div>
       </div>
     </footer>
