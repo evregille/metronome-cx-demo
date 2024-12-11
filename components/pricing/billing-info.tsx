@@ -1,8 +1,5 @@
-import Link from "next/link";
-import * as React from "react";
 
-import { CustomerPortalButton } from "@/components/forms/customer-portal-button";
-import { buttonVariants } from "@/components/ui/button";
+import * as React from "react";
 import {
   Card,
   CardContent,
@@ -11,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { UserSubscriptionPlan } from "types";
 
 interface BillingInfoProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -22,7 +19,6 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
   const {
     title,
     description,
-    stripeCustomerId,
     isPaid,
     isCanceled,
     stripeCurrentPeriodEnd,
@@ -46,14 +42,6 @@ export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
             {formatDate(stripeCurrentPeriodEnd)}.
           </p>
         ) : null}
-
-        {isPaid && stripeCustomerId ? (
-          <CustomerPortalButton userStripeId={stripeCustomerId} />
-        ) : (
-          <Link href="/pricing" className={cn(buttonVariants())}>
-            Choose a plan
-          </Link>
-        )}
       </CardFooter>
     </Card>
   );
