@@ -1,5 +1,4 @@
 import { PlansRow, SubscriptionPlan } from "types";
-import { env } from "@/env.mjs";
 
 export const pricingData: SubscriptionPlan[] = [
   {
@@ -44,8 +43,8 @@ export const pricingData: SubscriptionPlan[] = [
       yearly: 144,
     },
     stripeIds: {
-      monthly: env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PLAN_ID,
-      yearly: env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PLAN_ID,
+      monthly: null,
+      yearly: null,
     },
   },
   {
@@ -64,8 +63,8 @@ export const pricingData: SubscriptionPlan[] = [
       yearly: 300,
     },
     stripeIds: {
-      monthly: env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PLAN_ID,
-      yearly: env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PLAN_ID,
+      monthly: null,
+      yearly: null,
     },
   },
 ];
