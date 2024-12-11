@@ -1,14 +1,12 @@
-import { useMetronome } from "@/hooks/use-metronome-config";
 import { useEffect } from "react";
 import { MetronomeTopUpForm } from "@/components/forms/metronome-topup-form";
 
 export function Topup() {
-    const { metronome  } = useMetronome();
     useEffect(() => {
         (async () => {
             
         })()
-    },[metronome])
+    },[])
 
     return (
         <div className={"relative flex flex-col overflow-hidden rounded-3xl border shadow-sm"}>
