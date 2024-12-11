@@ -9,9 +9,9 @@ export async function createMetronomeEmbeddableLink(
   type: 'invoices' | 'usage' | 'credits',
   resolvedTheme: string | undefined,
 ) {
-   if (api_key === "") api_key = process.env['METRONOME_API_TOKEN'] || "";
-   if (customer_id === "") customer_id = process.env['METRONOME_CUSTOMER_ID'] || "";
-
+  if (api_key === "") api_key = process.env['METRONOME_API_TOKEN'] || "";
+  if (customer_id === "") customer_id = process.env['METRONOME_CUSTOMER_ID'] || "";
+  console.log(api_key, customer_id)
   try {
     const client = new Metronome({
       bearerToken: api_key
