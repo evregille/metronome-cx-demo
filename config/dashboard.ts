@@ -9,23 +9,28 @@ export const sidebarLinks: SidebarNavItem[] = [
       {
         href: "/dashboard/usage",
         icon: "package",
-        title: "Usage"
+        title: "Usage",
       },
       { href: "/dashboard/costs", icon: "lineChart", title: "Costs" },
       {
         href: "/dashboard/admin",
         icon: "laptop",
-        title: "Admin Panel"
+        title: "Admin Panel",
       },
     ],
   },
   {
     title: "OPTIONS",
     items: [
-      { href: "/dashboard/settings", icon: "settings", title: "Settings", disabled: true, },
+      {
+        href: "/dashboard/settings",
+        icon: "settings",
+        title: "Settings",
+        disabled: true,
+      },
       { href: "/", icon: "home", title: "Homepage" },
-      { href: "/#", icon: "bookOpen", title: "Documentation", disabled: true, },
-      { href: "#", icon: "messages", title: "Support", disabled: true,},
+      { href: "/#", icon: "bookOpen", title: "Documentation", disabled: true },
+      { href: "#", icon: "messages", title: "Support", disabled: true },
     ],
   },
 ];

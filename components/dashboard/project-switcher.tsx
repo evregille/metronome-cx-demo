@@ -47,34 +47,31 @@ export default function ProjectSwitcher({
     <div>
       <Popover open={openPopover} onOpenChange={setOpenPopover}>
         {/* <PopoverTrigger> */}
-          <Button
-            className="h-8 px-2"
-            variant={openPopover ? "secondary" : "ghost"}
-            onClick={() => setOpenPopover(!openPopover)}
-          >
-            <div className="flex items-center space-x-3 pr-2">
-              <div
-                className={cn(
-                  "size-3 shrink-0 rounded-full",
-                  selected.color,
-                )}
-              />
-              <div className="flex items-center space-x-3">
-                <span
-                  className={cn(
-                    "inline-block truncate text-sm font-medium xl:max-w-[120px]",
-                    large ? "w-full" : "max-w-[80px]",
-                  )}
-                >
-                  {selected.slug}
-                </span>
-              </div>
-            </div>
-            <ChevronsUpDown
-              className="size-4 text-muted-foreground"
-              aria-hidden="true"
+        <Button
+          className="h-8 px-2"
+          variant={openPopover ? "secondary" : "ghost"}
+          onClick={() => setOpenPopover(!openPopover)}
+        >
+          <div className="flex items-center space-x-3 pr-2">
+            <div
+              className={cn("size-3 shrink-0 rounded-full", selected.color)}
             />
-          </Button>
+            <div className="flex items-center space-x-3">
+              <span
+                className={cn(
+                  "inline-block truncate text-sm font-medium xl:max-w-[120px]",
+                  large ? "w-full" : "max-w-[80px]",
+                )}
+              >
+                {selected.slug}
+              </span>
+            </div>
+          </div>
+          <ChevronsUpDown
+            className="size-4 text-muted-foreground"
+            aria-hidden="true"
+          />
+        </Button>
         {/* </PopoverTrigger> */}
         <PopoverContent align="start" className="max-w-60 p-2">
           <ProjectList

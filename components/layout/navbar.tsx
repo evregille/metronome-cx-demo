@@ -69,19 +69,16 @@ export function NavBar({ scroll = false }: NavBarProps) {
         </div>
 
         <div className="flex items-center space-x-3">
-            <Link
-              href={"/dashboard"}
-              className="hidden md:block"
+          <Link href={"/dashboard"} className="hidden md:block">
+            <Button
+              className="gap-2 px-5"
+              variant="default"
+              size="sm"
+              rounded="full"
             >
-              <Button
-                className="gap-2 px-5"
-                variant="default"
-                size="sm"
-                rounded="full"
-              >
-                <span>Dashboard</span>
-              </Button>
-            </Link>
+              <span>Dashboard</span>
+            </Button>
+          </Link>
         </div>
       </MaxWidthWrapper>
     </header>

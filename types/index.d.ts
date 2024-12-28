@@ -6,16 +6,16 @@ export type MetronomeConfig = {
   api_key: string;
   customer_id: string;
   chart_type: string;
-  total_granted: number | undefined,
-  billable_metrics: Array<any>,
-  total_used:  number | undefined,
-  usage: any,
-  embeddable_url:{
-    invoices: string,
-    usage: string,
-    credits:string,
-  }
-}
+  total_granted: number | undefined;
+  billable_metrics: Array<any>;
+  total_used: number | undefined;
+  usage: any;
+  embeddable_url: {
+    invoices: string;
+    usage: string;
+    credits: string;
+  };
+};
 
 export type SiteConfig = {
   name: string;
@@ -107,6 +107,6 @@ export type FeatureLdg = {
 export type TestimonialType = {
   name: string;
   job: string;
-  image: string;
   review: string;
+  image: string;
 };

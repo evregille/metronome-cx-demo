@@ -8,13 +8,9 @@ export const metadata = constructMetadata({
 });
 
 export default async function AdminPage() {
-  
   return (
     <>
-      <DashboardHeader
-        heading="Admin Panel"
-        text="Demo setup."
-      />
+      <DashboardHeader heading="Admin Panel" text="Demo setup." />
       <MetronomeAdminForm />
     </>
   );

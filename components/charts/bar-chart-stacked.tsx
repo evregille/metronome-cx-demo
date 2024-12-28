@@ -1,35 +1,40 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { BarChart, Bar, XAxis, CartesianGrid, } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))","hsl(var(--chart-4))", "hsl(var(--chart-5))", "hsl(var(--chart-6))","hsl(var(--chart-7))"]
+const COLORS = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+  "hsl(var(--chart-6))",
+  "hsl(var(--chart-7))",
+];
 
-export function BarChartStacked({chartData, group_values}) {
+export function BarChartStacked({ chartData, group_values }) {
   let chartConfig = {};
 
-  if(group_values && group_values.length > 0 && group_values[0] != null)
-    group_values.forEach((group_value:string, i: number) => {
+  if (group_values && group_values.length > 0 && group_values[0] != null)
+    group_values.forEach((group_value: string, i: number) => {
       chartConfig[group_value] = {
         label: group_value,
-        color: COLORS[i] || COLORS[0]
-      }
+        color: COLORS[i] || COLORS[0],
+      };
     });
-  else chartConfig["value"] = {
-    label: "total",
-    color: COLORS[0],
-  }
+  else
+    chartConfig["value"] = {
+      label: "total",
+      color: COLORS[0],
+    };
 
   return (
     <Card className="flex flex-col">
@@ -61,20 +66,19 @@ export function BarChartStacked({chartData, group_values}) {
               cursor={false}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            { Object.keys(chartConfig).map( (el: any, idx: number) => {
-                return (
-                  <Bar
-                    key={idx}
-                    dataKey={el}
-                    type="natural"
-                    fill={chartConfig[el].color}
-                    fillOpacity={0.4}
-                    stroke={chartConfig[el].color}
-                    stackId="a"
-                  />
-                )
-              })
-            }
+            {Object.keys(chartConfig).map((el: any, idx: number) => {
+              return (
+                <Bar
+                  key={idx}
+                  dataKey={el}
+                  type="natural"
+                  fill={chartConfig[el].color}
+                  fillOpacity={0.4}
+                  stroke={chartConfig[el].color}
+                  stackId="a"
+                />
+              );
+            })}
           </BarChart>
         </ChartContainer>
       </CardContent>

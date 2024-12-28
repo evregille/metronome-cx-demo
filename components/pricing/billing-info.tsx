@@ -1,5 +1,7 @@
-
 import * as React from "react";
+
+import { UserSubscriptionPlan } from "types";
+import { formatDate } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -8,21 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { formatDate } from "@/lib/utils";
-import { UserSubscriptionPlan } from "types";
 
 interface BillingInfoProps extends React.HTMLAttributes<HTMLFormElement> {
   userSubscriptionPlan: UserSubscriptionPlan;
 }
 
 export function BillingInfo({ userSubscriptionPlan }: BillingInfoProps) {
-  const {
-    title,
-    description,
-    isPaid,
-    isCanceled,
-    stripeCurrentPeriodEnd,
-  } = userSubscriptionPlan;
+  const { title, description, isPaid, isCanceled, stripeCurrentPeriodEnd } =
+    userSubscriptionPlan;
 
   return (
     <Card>

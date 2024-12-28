@@ -27,9 +27,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             </ul>
           </div>
         ))}
-        <div className="col-span-full flex flex-col items-end sm:col-span-1 md:col-span-2">
-        
-        </div>
+        <div className="col-span-full flex flex-col items-end sm:col-span-1 md:col-span-2"></div>
       </div>
     </footer>
   );

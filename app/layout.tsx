@@ -29,18 +29,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
         )}
       >
         {/* <SessionProvider> */}
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {/* <ModalProvider>{children}</ModalProvider> */}
-            {children}
-            <Analytics />
-            <Toaster richColors closeButton />
-            <TailwindIndicator />
-          </ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {/* <ModalProvider>{children}</ModalProvider> */}
+          {children}
+          <Analytics />
+          <Toaster richColors closeButton />
+          <TailwindIndicator />
+        </ThemeProvider>
         {/* </SessionProvider> */}
       </body>
     </html>

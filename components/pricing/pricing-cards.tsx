@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BillingFormButton } from "@/components/forms/billing-form-button";
-
 import { HeaderSection } from "@/components/shared/header-section";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
@@ -96,7 +95,7 @@ export function PricingCards({ subscriptionPlan }: PricingCardsProps) {
               ))}
           </ul>
 
-          { subscriptionPlan ? (
+          {subscriptionPlan ? (
             offer.title === "Starter" ? (
               <Link
                 href="/dashboard"
