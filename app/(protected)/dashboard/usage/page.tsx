@@ -27,7 +27,7 @@ export default function Usage() {
       const result = await fetchCosts();
       setGroupValues(Object.keys(result.products));
     })();
-  }, [metronome_config, ]);
+  }, [metronome_config]);
 
   const handleSelectProduct = (value: string) => {
     setSelectedProduct(value);

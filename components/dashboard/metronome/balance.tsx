@@ -9,7 +9,7 @@ export function Balance() {
     (async () => {
       await fetchBalance();
     })();
-  }, [metronome_config, ]);
+  }, [metronome_config]);
 
   return (
     <div
