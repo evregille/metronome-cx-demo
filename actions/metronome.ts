@@ -8,7 +8,7 @@ const DARK_DEFAULT = {
   Gray_medium: "#b050e8",
   Gray_light: "#fb00f5",
   Gray_extralight: "#fb00f5",
-  White: "#000000",
+  // White: "#000000",
   Primary_medium: "#ffffff",
   Primary_light: "#fb00f5",
   Primary_green: "#8459ca",

@@ -6,7 +6,6 @@ import { ThemeProvider } from "next-themes";
 import { cn, constructMetadata } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@/components/analytics";
-// import ModalProvider from "@/components/modals/providers";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 
 interface RootLayoutProps {
@@ -28,20 +27,17 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontGeist.variable,
         )}
       >
-        {/* <SessionProvider> */}
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          {/* <ModalProvider>{children}</ModalProvider> */}
           {children}
           <Analytics />
           <Toaster richColors closeButton />
           <TailwindIndicator />
         </ThemeProvider>
-        {/* </SessionProvider> */}
       </body>
     </html>
   );
