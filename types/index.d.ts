@@ -107,6 +107,6 @@ export type FeatureLdg = {
 export type TestimonialType = {
   name: string;
   job: string;
-  review: string;
   image: string;
+  review: string;
 };

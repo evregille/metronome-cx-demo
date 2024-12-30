@@ -32,9 +32,10 @@ export function MetronomeAdminForm() {
     (async () => {
       await fetchCustomers(undefined);
     })();
-  }, []);
+  }, [fetchCustomers]);
 
   const handleOnSubmit = (e) => {
+    console.log("handleOnSubmit", e);
     e.preventDefault();
     setMetronome({
       api_key: metronomeApiKey,
@@ -44,6 +45,7 @@ export function MetronomeAdminForm() {
   };
 
   const handleInputChange = async function (e: any) {
+    console.log("handleInputChange", e);
     switch (e.target.id) {
       case "api_key":
         setMetronomeApiKey(e.target.value);
@@ -60,8 +62,16 @@ export function MetronomeAdminForm() {
   };
 
   const handleSelectCustomerName = function (value: string) {
+    console.log("handleSelectCustomerName", value);
     if (value) setMetronomeCustomerID(value);
   };
+
+  console.log("cust", metronomeCustomerID);
+  if (metronomeCustomerID)
+    console.log(
+      customers.filter((el) => el.id === metronomeCustomerID)[0].name,
+    );
+
   return (
     <div className={"grid gap-6"}>
       <form onSubmit={handleOnSubmit}>
@@ -98,7 +108,7 @@ export function MetronomeAdminForm() {
                 customers.filter((el) => el.id === metronomeCustomerID).length >
                   0
                   ? customers.filter((el) => el.id === metronomeCustomerID)[0]
-                      .id
+                      .name
                   : undefined
               }
               onValueChange={handleSelectCustomerName}

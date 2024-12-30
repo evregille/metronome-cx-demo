@@ -4,15 +4,15 @@ import Metronome from "@metronome/sdk";
 
 const CUSTOM_SPEND_THRESHOLD_ALERT_NAME = "CUSTOM_SPEND_THRESHOLD_ALERT";
 const DARK_DEFAULT = {
-  // Gray_dark: "#fb00f5",
-  // Gray_medium: "#b050e8",
-  // Gray_light: "#fb00f5",
-  // Gray_extralight: "#fb00f5",
-  // White: "#000000",
-  // Primary_medium: "#ffffff",
-  // Primary_light: "#fb00f5",
-  // Primary_green: "#8459ca",
-  // Primary_red: "#4baaf2",
+  Gray_dark: "#fb00f5",
+  Gray_medium: "#b050e8",
+  Gray_light: "#fb00f5",
+  Gray_extralight: "#fb00f5",
+  White: "#000000",
+  Primary_medium: "#ffffff",
+  Primary_light: "#fb00f5",
+  Primary_green: "#8459ca",
+  Primary_red: "#4baaf2",
 };
 
 export async function createMetronomeEmbeddableLink(
@@ -35,7 +35,6 @@ export async function createMetronomeEmbeddableLink(
         return { name: el[0], value: el[1] };
       });
     }
-    console.log(color_overrides);
     const response = await client.dashboards.getEmbeddableURL({
       customer_id,
       dashboard: type,
@@ -196,7 +195,6 @@ export async function createCustomerSpendAlert(
       evaluate_on_create: true,
       threshold: threshold,
     });
-    console.log("Alert created", response);
     return true;
   } catch (error) {
     console.log(error);
@@ -380,7 +378,6 @@ const retrieveUsage = (breakdowns: Array<any>): any => {
         product_names = {};
       breakdown.line_items.forEach((line) => {
         // for each line item part of the breakdown
-        console.log(line);
         if (line.total >= 0) {
           // ignore credits in the costs view
           if (!products[line.name]) products[line.name] = {}; // add product name
