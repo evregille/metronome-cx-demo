@@ -4,6 +4,8 @@ See [Metronome API Calls](https://github.com/evregille/metronome-cx-demo/blob/ma
 
 For the implementation, using a single [hook](https://github.com/evregille/metronome-cx-demo/blob/main/hooks/use-metronome-config.tsx) 
 
+Note that all the requests are assuming currency in Metronome is USD (see [Pricing Units](https://app.metronome.com/offering/pricing-units))
+
 ## Author
 
 This project was inspired by [@miickasmt](https://twitter.com/miickasmt) in 2023, released under the [MIT license](https://github.com/shadcn/taxonomy/blob/main/LICENSE.md).
