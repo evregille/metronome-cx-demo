@@ -70,7 +70,9 @@ export async function fetchMetronomeCustomerBalance(
     let total_granted: number = 0,
       total_used: number = 0;
     let processed_grants: Array<any> = [];
+    
     response.data.forEach((grant) => {
+      console.log('grants', grant.access_schedule)
       // Calculate total granted for this item
       const granted =
         grant["access_schedule"] && grant["access_schedule"]["schedule_items"]
@@ -79,7 +81,7 @@ export async function fetchMetronomeCustomerBalance(
               0,
             )
           : 0;
-
+      
       // Calculate total used for this item
       const used = grant["ledger"]
         ? grant["ledger"].reduce(
