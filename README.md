@@ -1,10 +1,14 @@
 ## Demo Metronome Customer Experience
 
-See [Metronome API Calls](https://github.com/evregille/metronome-cx-demo/blob/main/actions/metronome.ts) to power some of the CX like costs breakdowns
+This example of web portal is taken from the [Next SaaS Starter](https://github.com/mickasmt/next-saas-stripe-starter) and updated to demonstrate Metronome embeddable dashboards and API to build usage billing customer experiences.
 
-For the implementation, using a single [hook](https://github.com/evregille/metronome-cx-demo/blob/main/hooks/use-metronome-config.tsx) 
+Most of the Metronome logic is in the following files:
+- backend-end requests in the `actions/metronome.ts` file
+- hook for metronome to store the metronome state data in the `hooks/use-metronome-config.tsx` file
+- Metronome components to show balance, spend alerts etc. in the `components/dashboard/metronome` folder
 
 Note that all the requests are assuming currency in Metronome is USD (see [Pricing Units](https://app.metronome.com/offering/pricing-units))
+
 
 ## Author
 
