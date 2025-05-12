@@ -25,7 +25,7 @@ export function CurrentInvoiceTotal() {
         <div className="w-full text-3xl font-semibold leading-6">
           ${" "}
           {current_spend === undefined
-            ? "N/A"
+            ? 0
             : (current_spend / 100)
                 .toFixed(2)
                 .toString()

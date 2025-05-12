@@ -9,10 +9,19 @@ export function Invoices() {
   const { metronome_config, embeddable_url, getDashboard } = useMetronome();
   const { resolvedTheme } = useTheme();
 
+
+  useEffect( () => {
+    
+  }, [resolvedTheme]);
+
   useEffect(() => {
     (async () => {
       await getDashboard("invoices", resolvedTheme);
     })();
+    const x = document.getElementById("invoices");
+    // if( x && resolvedTheme === "dark"){
+      if (x) x.style.backgroundColor = "black";
+    // } else if (x) x.style.backgroundColor = "white"
   }, [metronome_config, resolvedTheme]);
 
   return (
@@ -27,13 +36,16 @@ export function Invoices() {
         </p>
         {embeddable_url.invoices && embeddable_url.invoices.length > 0 && (
           <iframe
+            id="invoices"
             title={"Metronome Invoices"}
-            allowTransparency={true}
             src={embeddable_url.invoices}
             width={"100%"}
             height={"500px"}
           />
         )}
+      </div>
+
+      <div>
       </div>
     </div>
   );

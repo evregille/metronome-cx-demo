@@ -29,14 +29,14 @@ export function ModeToggle() {
           <Icons.sun className="mr-2 size-4" />
           <span>Light</span>
         </DropdownMenuItem>
-        {/* <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Icons.moon className="mr-2 size-4" />
           <span>Dark</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
           <Icons.laptop className="mr-2 size-4" />
           <span>System</span>
-        </DropdownMenuItem> */}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -4,15 +4,15 @@ import Metronome from "@metronome/sdk";
 
 const CUSTOM_SPEND_THRESHOLD_ALERT_NAME = "CUSTOM_SPEND_THRESHOLD_ALERT";
 const DARK_DEFAULT = {
-  Gray_dark: "#fb00f5",
-  Gray_medium: "#b050e8",
-  Gray_light: "#fb00f5",
-  Gray_extralight: "#fb00f5",
-  // White: "#000000",
-  Primary_medium: "#ffffff",
-  Primary_light: "#fb00f5",
-  Primary_green: "#8459ca",
-  Primary_red: "#4baaf2",
+  // Gray_dark: "#fb00f5",
+  // Gray_medium: "#b050e8",
+  // Gray_light: "#fb00f5",
+  // Gray_extralight: "#fb00f5",
+  // // White: "#000000",
+  // Primary_medium: "#ffffff",
+  // Primary_light: "#fb00f5",
+  // Primary_green: "#8459ca",
+  // Primary_red: "#4baaf2",
 };
 
 export async function createMetronomeEmbeddableLink(
@@ -443,7 +443,7 @@ const retrieveUsage = (breakdowns: Array<any>): any => {
         }
       });
       items.push({
-        ...dimensions,
+        ...dimensions, 
         ...product_names,
         starting_on: breakdown.breakdown_start_timestamp,
         type: breakdown.type,
