@@ -20,7 +20,7 @@ export function Invoices() {
     })();
     const x = document.getElementById("invoices");
     // if( x && resolvedTheme === "dark"){
-      if (x) x.style.backgroundColor = "black";
+      // if (x) x.style.backgroundColor = "black";
     // } else if (x) x.style.backgroundColor = "white"
   }, [metronome_config, resolvedTheme]);
 

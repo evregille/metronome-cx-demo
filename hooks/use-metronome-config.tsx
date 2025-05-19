@@ -9,6 +9,7 @@ import {
   fetchMetronomeCustomerBalance,
   fetchMetronomeCustomers,
   fetchMetronomeInvoiceBreakdown,
+  fetchMetronomeGroupedUsage,
 } from "@/actions/metronome";
 
 interface MetronomeConfig {
@@ -30,6 +31,11 @@ interface Usage {
   items: Array<any>;
   products: any;
 }
+
+interface GroupedUsage {
+  usage: any;
+}
+
 interface Customers {
   id: string;
   name: string;
@@ -38,15 +44,17 @@ interface Customers {
 interface MetronomeContextType {
   metronome_config: MetronomeConfig;
   balance: Balance;
-  current_spend: number | undefined;
+  current_spend: object | undefined;
   embeddable_url: any;
   usage: Usage;
+  grouped_usage: GroupedUsage;
   costs: Costs;
   customers: Array<Customers>;
   setMetronome: (d: MetronomeConfig) => void;
   getDashboard: (type: string, theme: string | undefined) => Promise<void>;
   fetchBalance: () => Promise<void>;
   fetchCosts: () => Promise<Costs>;
+  fetchGroupedUsage: () => Promise<GroupedUsage>;
   fetchAlerts: () => Promise<any>;
   createAlert: (threshold: number) => Promise<any>;
   fetchCurrentSpend: () => Promise<void>;
@@ -60,6 +68,7 @@ const MetronomeContext = createContext<MetronomeContextType>({
   current_spend: undefined,
   embeddable_url: { invoices: "", usage: "", credits: "" },
   usage: { items: [], products: [] },
+  grouped_usage: {usage: []},
   costs: { items: [], products: [] },
   customers: [],
   setMetronome: () => {},
@@ -73,6 +82,9 @@ const MetronomeContext = createContext<MetronomeContextType>({
   },
   createAlert: async (threshold) => {
     return {};
+  },
+  fetchGroupedUsage: async ()=> {
+    return {usage:[]}
   },
   fetchCurrentSpend: async () => {},
   fetchCustomers: async () => {},
@@ -97,8 +109,10 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
     credits: "",
   });
   const [usage, setUsage] = useState<Usage>({ items: [], products: [] });
+  const [grouped_usage, setGroupedUsage] = useState<GroupedUsage>({ usage: [] });
+
   const [costs, setCosts] = useState<Costs>({ items: [], products: [] });
-  const [current_spend, setCurrentSpend] = useState<number | undefined>(
+  const [current_spend, setCurrentSpend] = useState<object | undefined>(
     undefined,
   );
   const [customers, setCustomers] = useState<Array<Customers>>([]);
@@ -215,13 +229,30 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const fetchGroupedUsage = async (): Promise<GroupedUsage> => {
+    try {
+      const response = await fetchMetronomeGroupedUsage(
+        metronome_config.api_key,
+        metronome_config.customer_id,
+        "",
+        "DAY",
+      );
+      if (response && response.status === "success" && response.usage) {
+        setGroupedUsage({usage: response.usage});
+        return {usage: response.usage};
+      } else return { usage: [],};
+    } catch (error) {
+      return { usage: [], };
+    }
+  }
+
   const fetchCurrentSpend = async (): Promise<void> => {
     try {
       const spend = await fetchCurrentSpendDraftInvoice(
         metronome_config.api_key,
         metronome_config.customer_id,
       );
-      if (spend && spend.total) setCurrentSpend(spend.total);
+      if (spend && spend.total) setCurrentSpend({total: spend.total, productTotals: spend.productTotals} );
       else setCurrentSpend(undefined);
     } catch (error) {
       setCurrentSpend(undefined);
@@ -235,6 +266,7 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
         balance,
         embeddable_url,
         current_spend,
+        grouped_usage,
         usage,
         metronome_config,
         costs,
@@ -246,6 +278,7 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
         createAlert,
         fetchAlerts,
         fetchCurrentSpend,
+        fetchGroupedUsage,
         fetchCustomers,
       }}
     >

@@ -35,6 +35,7 @@ export async function createMetronomeEmbeddableLink(
         return { name: el[0], value: el[1] };
       });
     }
+
     const response = await client.dashboards.getEmbeddableURL({
       customer_id,
       dashboard: type,
@@ -72,7 +73,6 @@ export async function fetchMetronomeCustomerBalance(
     let processed_grants: Array<any> = [];
     
     response.data.forEach((grant) => {
-      console.log('grants', grant.access_schedule)
       // Calculate total granted for this item
       const granted =
         grant["access_schedule"] && grant["access_schedule"]["schedule_items"]
@@ -147,8 +147,8 @@ export async function fetchMetronomeInvoiceBreakdown(
     return {
       status: "success",
       result: {
-        costs: retrieveCost(data),
-        usage: retrieveUsage(data),
+        costs: retrieveCost(data.filter(el => el.type === "USAGE")),
+        usage: retrieveUsage(data.filter(el => el.type === "USAGE")),
       },
     };
   } catch (error) {
@@ -204,6 +204,48 @@ export async function createCustomerSpendAlert(
   }
 }
 
+export async function fetchMetronomeGroupedUsage(
+  api_key: string,
+  customer_id: string,
+  billable_metric_id: string,
+  window_size: "HOUR" | "DAY" | undefined,
+){
+  if (api_key === "") api_key = process.env["METRONOME_API_TOKEN"] || "";
+  if (customer_id === "")
+    customer_id = process.env["METRONOME_CUSTOMER_ID"] || "";
+  if (billable_metric_id === "") billable_metric_id = process.env["METRONOME_BM"] || "";
+
+  try {
+    const { start, end } = interval(30);
+    const client = new Metronome({ bearerToken: api_key });
+    const usage = await client.usage.listWithGroups({ 
+      customer_id: customer_id,
+      billable_metric_id: billable_metric_id,
+      window_size: window_size || 'DAY',
+      starting_on: new Date(start).toISOString(),
+      ending_before: new Date(end).toISOString(),
+      group_by:{
+        key: "workspace"
+      }
+     });
+     console.log(usage.data)
+     const data = usage.data.map(el => {
+      return {
+        starting_on: el.starting_on,
+        'AI Workflows - Steps': el.value,
+        dimensions: {
+          [el.group_key as string]: el.group_value
+        },
+        type:'USAGE',
+      }
+     })
+     
+     return { status: "success", usage: data };
+  } catch (error) {
+    return { status: "error" };
+  }
+}
+
 export async function fetchCurrentSpendDraftInvoice(
   api_key: string,
   customer_id: string,
@@ -217,14 +259,28 @@ export async function fetchCurrentSpendDraftInvoice(
     const invoices = await client.customers.invoices.list(customer_id, {
       status: "DRAFT",
     });
-    let total = 0;
+    let total = 0, productTotals: Record<string, number> = {};
     if (invoices && invoices.data) {
       total = invoices.data.reduce(
         (accumulator, current) => accumulator + current["total"],
         0,
       );
+      
+      invoices.data.forEach(inv => {
+        inv.line_items.forEach((item: any) => {
+          if(item.total > 0 ){
+            if (!productTotals[item.name]) {
+              productTotals[item.name] = 0;
+            }
+            productTotals[item.name] += item.total;
+          }
+          
+        })
+
+      })
+
     }
-    return { status: "ok", total };
+    return { status: "ok", total, productTotals  };
   } catch (error) {
     return { status: "error" };
   }
@@ -297,7 +353,7 @@ const retrieveCost = (breakdowns: Array<any>): any => {
         product_names = {};
       breakdown.line_items.forEach((line) => {
         // for each line item part of the breakdown
-        if (line.total >= 0) {
+        if (line.total >= 0 && line.product_type === "UsageProductListItem") {
           // ignore credits in the costs view
           if (!products[line.name]) products[line.name] = {}; // add product name
           product_names[line.name] = product_names[line.name]
@@ -380,7 +436,7 @@ const retrieveUsage = (breakdowns: Array<any>): any => {
         product_names = {};
       breakdown.line_items.forEach((line) => {
         // for each line item part of the breakdown
-        if (line.total >= 0) {
+        if (line.total >= 0 && line.product_type === "UsageProductListItem") {
           // ignore credits in the costs view
           if (!products[line.name]) products[line.name] = {}; // add product name
           product_names[line.name] = product_names[line.name]

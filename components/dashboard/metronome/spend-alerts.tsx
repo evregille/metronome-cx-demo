@@ -7,7 +7,7 @@ import { MetronomeAlertForm } from "@/components/forms/metronome-alert-form";
 
 export function SpendAlerts() {
   const { fetchAlerts, createAlert } = useMetronome();
-  const [isSpendAlertOn, setIsSpendAlertOn] = useState<boolean>(false);
+  const [isSpendAlertOn, setIsSpendAlertOn] = useState<boolean>(true);
   const [currentThreshold, setCurrentThreshold] = useState<number>(1000);
 
   useEffect(() => {
