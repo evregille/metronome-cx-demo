@@ -204,47 +204,6 @@ export async function createCustomerSpendAlert(
   }
 }
 
-export async function fetchMetronomeGroupedUsage(
-  api_key: string,
-  customer_id: string,
-  billable_metric_id: string,
-  window_size: "HOUR" | "DAY" | undefined,
-){
-  if (api_key === "") api_key = process.env["METRONOME_API_TOKEN"] || "";
-  if (customer_id === "")
-    customer_id = process.env["METRONOME_CUSTOMER_ID"] || "";
-  if (billable_metric_id === "") billable_metric_id = process.env["METRONOME_BM"] || "";
-
-  try {
-    const { start, end } = interval(30);
-    const client = new Metronome({ bearerToken: api_key });
-    const usage = await client.usage.listWithGroups({ 
-      customer_id: customer_id,
-      billable_metric_id: billable_metric_id,
-      window_size: window_size || 'DAY',
-      starting_on: new Date(start).toISOString(),
-      ending_before: new Date(end).toISOString(),
-      group_by:{
-        key: "workspace"
-      }
-     });
-     console.log(usage.data)
-     const data = usage.data.map(el => {
-      return {
-        starting_on: el.starting_on,
-        'AI Workflows - Steps': el.value,
-        dimensions: {
-          [el.group_key as string]: el.group_value
-        },
-        type:'USAGE',
-      }
-     })
-     
-     return { status: "success", usage: data };
-  } catch (error) {
-    return { status: "error" };
-  }
-}
 
 export async function fetchCurrentSpendDraftInvoice(
   api_key: string,
