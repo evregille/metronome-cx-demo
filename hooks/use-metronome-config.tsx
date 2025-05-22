@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   createCustomerSpendAlert,
   createMetronomeEmbeddableLink,
@@ -11,281 +17,521 @@ import {
   fetchMetronomeInvoiceBreakdown,
 } from "@/actions/metronome";
 
+// Types based on the backend API
 interface MetronomeConfig {
   api_key: string;
   customer_id: string;
-  chart_type: string;
+  chart_type: "BarChart" | "LineChart" | "PieChart";
 }
 
 interface Balance {
-  total_granted: number | undefined;
-  total_used: number | undefined;
+  total_granted: number;
+  total_used: number;
+  processed_grants: Array<{
+    id: string;
+    type: string;
+    product_name: string;
+    granted: number;
+    used: number;
+    remaining: number;
+  }>;
 }
 
-interface Costs {
+interface BreakdownData {
   items: Array<any>;
-  products: any;
-}
-interface Usage {
-  items: Array<any>;
-  products: any;
+  products: Record<string, any>;
 }
 
-interface GroupedUsage {
-  usage: any;
+interface EmbeddableUrls {
+  invoices: string;
+  usage: string;
+  credits: string;
 }
 
-interface Customers {
+interface CurrentSpend {
+  total: number;
+  productTotals: Record<string, number>;
+}
+
+interface Customer {
   id: string;
   name: string;
 }
 
-interface MetronomeContextType {
-  metronome_config: MetronomeConfig;
-  balance: Balance;
-  current_spend: object | undefined;
-  embeddable_url: any;
-  usage: Usage;
-  costs: Costs;
-  customers: Array<Customers>;
-  setMetronome: (d: MetronomeConfig) => void;
-  getDashboard: (type: string, theme: string | undefined) => Promise<void>;
-  fetchBalance: () => Promise<void>;
-  fetchCosts: () => Promise<Costs>;
-  fetchAlerts: () => Promise<any>;
-  createAlert: (threshold: number) => Promise<any>;
-  fetchCurrentSpend: () => Promise<void>;
-  fetchCustomers: (api_key: string | undefined) => Promise<void>;
+interface LoadingStates {
+  balance: boolean;
+  costs: boolean;
+  usage: boolean;
+  currentSpend: boolean;
+  customers: boolean;
+  embeddableUrls: boolean;
+  alerts: boolean;
 }
 
-// 1. Create the context with a default value
-const MetronomeContext = createContext<MetronomeContextType>({
-  metronome_config: { api_key: "", customer_id: "", chart_type: "BarChart" },
-  balance: { total_used: undefined, total_granted: undefined },
-  current_spend: undefined,
-  embeddable_url: { invoices: "", usage: "", credits: "" },
-  usage: { items: [], products: [] },
-  costs: { items: [], products: [] },
+interface ErrorStates {
+  balance: string | null;
+  costs: string | null;
+  usage: string | null;
+  currentSpend: string | null;
+  customers: string | null;
+  embeddableUrls: string | null;
+  alerts: string | null;
+}
+
+interface MetronomeContextType {
+  // Config and state
+  config: MetronomeConfig;
+  balance: Balance | null;
+  currentSpend: CurrentSpend | null;
+  embeddableUrls: EmbeddableUrls;
+  usage: BreakdownData;
+  costs: BreakdownData;
+  customers: Customer[];
+  loading: LoadingStates;
+  errors: ErrorStates;
+
+  // Actions
+  setConfig: (config: MetronomeConfig) => void;
+  getDashboard: (
+    type: "invoices" | "usage" | "credits",
+    theme?: string,
+  ) => Promise<void>;
+  fetchBalance: () => Promise<void>;
+  fetchCosts: (windowSize?: "HOUR" | "DAY") => Promise<BreakdownData>;
+  fetchUsage: (windowSize?: "HOUR" | "DAY") => Promise<BreakdownData>;
+  fetchAlerts: () => Promise<any>;
+  createAlert: (threshold: number) => Promise<boolean>;
+  fetchCurrentSpend: () => Promise<void>;
+  fetchCustomers: (apiKey?: string) => Promise<void>;
+  reset: () => void;
+  loadAllData: () => Promise<void>;
+}
+
+const initialLoadingStates: LoadingStates = {
+  balance: false,
+  costs: false,
+  usage: false,
+  currentSpend: false,
+  customers: false,
+  embeddableUrls: false,
+  alerts: false,
+};
+
+const initialErrorStates: ErrorStates = {
+  balance: null,
+  costs: null,
+  usage: null,
+  currentSpend: null,
+  customers: null,
+  embeddableUrls: null,
+  alerts: null,
+};
+
+const defaultContext: MetronomeContextType = {
+  config: { api_key: "", customer_id: "", chart_type: "BarChart" },
+  balance: null,
+  currentSpend: null,
+  embeddableUrls: { invoices: "", usage: "", credits: "" },
+  usage: { items: [], products: {} },
+  costs: { items: [], products: {} },
   customers: [],
-  setMetronome: () => {},
-  getDashboard: async (type, theme) => {},
+  loading: initialLoadingStates,
+  errors: initialErrorStates,
+  setConfig: () => {},
+  getDashboard: async () => {},
   fetchBalance: async () => {},
-  fetchCosts: async () => {
-    return { items: [], products: [] };
-  },
-  fetchAlerts: async () => {
-    return {};
-  },
-  createAlert: async (threshold) => {
-    return {};
-  },
+  fetchCosts: async () => ({ items: [], products: {} }),
+  fetchUsage: async () => ({ items: [], products: {} }),
+  fetchAlerts: async () => null,
+  createAlert: async () => false,
   fetchCurrentSpend: async () => {},
   fetchCustomers: async () => {},
-});
+  reset: () => {},
+  loadAllData: async () => {},
+};
 
-// 2. Create the provider component
+const MetronomeContext = createContext<MetronomeContextType>(defaultContext);
+
 export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [metronome_config, setMetronomeConfig] = useState<MetronomeConfig>({
-    api_key: "",
-    customer_id: "",
-    chart_type: "BarChart",
-  });
-  const [balance, setBalance] = useState<Balance>({
-    total_used: undefined,
-    total_granted: undefined,
-  });
-  const [embeddable_url, setEmbedableUrl] = useState<any>({
-    invoices: "",
-    usage: "",
-    credits: "",
-  });
-  const [usage, setUsage] = useState<Usage>({ items: [], products: [] });
-  const [grouped_usage, setGroupedUsage] = useState<GroupedUsage>({ usage: [] });
-
-  const [costs, setCosts] = useState<Costs>({ items: [], products: [] });
-  const [current_spend, setCurrentSpend] = useState<object | undefined>(
-    undefined,
+  // State
+  const [config, setConfigState] = useState<MetronomeConfig>(
+    defaultContext.config,
   );
-  const [customers, setCustomers] = useState<Array<Customers>>([]);
+  const [balance, setBalance] = useState<Balance | null>(null);
+  const [embeddableUrls, setEmbeddableUrls] = useState<EmbeddableUrls>(
+    defaultContext.embeddableUrls,
+  );
+  const [usage, setUsage] = useState<BreakdownData>(defaultContext.usage);
+  const [costs, setCosts] = useState<BreakdownData>(defaultContext.costs);
+  const [currentSpend, setCurrentSpend] = useState<CurrentSpend | null>(null);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState<LoadingStates>(initialLoadingStates);
+  const [errors, setErrors] = useState<ErrorStates>(initialErrorStates);
 
-  const setMetronome = async (value: MetronomeConfig) => {
-    setMetronomeConfig(value);
-    resetMetronomeData();
-    // await loadMetronomeData();
-  };
+  // Helper function to update loading state
+  const setLoadingState = useCallback(
+    (key: keyof LoadingStates, value: boolean) => {
+      setLoading((prev) => ({ ...prev, [key]: value }));
+    },
+    [],
+  );
 
-  const resetMetronomeData = () => {
-    setEmbedableUrl({ invoices: "", usage: "", credits: "" });
-    setBalance({ total_used: undefined, total_granted: undefined });
-    setUsage({ items: [], products: [] });
-    setCosts({ items: [], products: [] });
-    setCurrentSpend(undefined);
-  };
+  // Helper function to update error state
+  const setErrorState = useCallback(
+    (key: keyof ErrorStates, value: string | null) => {
+      setErrors((prev) => ({ ...prev, [key]: value }));
+    },
+    [],
+  );
 
-  const loadMetronomeData = async () => {
-    await fetchBalance();
-    await getDashboard("invoices", "light");
-    await fetchCosts();
-    await fetchCurrentSpend();
-  };
+  // Reset all data
+  const reset = useCallback(() => {
+    setBalance(null);
+    setEmbeddableUrls({ invoices: "", usage: "", credits: "" });
+    setUsage({ items: [], products: {} });
+    setCosts({ items: [], products: {} });
+    setCurrentSpend(null);
+    setCustomers([]);
+    setErrors(initialErrorStates);
+  }, []);
 
-  const fetchCustomers = async (api_key: string | undefined) => {
-    try {
-      const response = await fetchMetronomeCustomers(
-        api_key ? api_key : metronome_config.api_key,
-      );
-      if (response && response.customers) {
-        setCustomers(response.customers);
+  // Set configuration and reset data
+  const setConfig = useCallback(
+    (newConfig: MetronomeConfig) => {
+      setConfigState(newConfig);
+      reset();
+    },
+    [reset],
+  );
+
+  // Fetch customers
+  const fetchCustomers = useCallback(
+    async (apiKey?: string) => {
+      setLoadingState("customers", true);
+      setErrorState("customers", null);
+
+      try {
+        const response = await fetchMetronomeCustomers(
+          apiKey || config.api_key,
+        );
+
+        if (response.status === "success") {
+          setCustomers(response.result || []);
+        } else {
+          throw new Error(response.message || "Failed to fetch customers");
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
+        setErrorState("customers", message);
+        console.error("Error fetching customers:", error);
+      } finally {
+        setLoadingState("customers", false);
       }
-    } catch (e) {
-      console.log("exception", e);
-    }
-  };
+    },
+    [config.api_key, setLoadingState, setErrorState],
+  );
 
-  const getDashboard = async (
-    type: "invoices" | "usage" | "credits",
-    resolvedTheme: string | undefined,
-  ): Promise<void> => {
-    try {
-      const response = await createMetronomeEmbeddableLink(
-        metronome_config.api_key,
-        metronome_config.customer_id,
-        type,
-        resolvedTheme,
-      );
-      console.log(metronome_config, response);
-      if (response.status === "success" && response.result)
-        setEmbedableUrl({
-          ...embeddable_url,
-          invoices: response.result,
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // Get dashboard embeddable URL
+  const getDashboard = useCallback(
+    async (type: "invoices" | "usage", theme?: string) => {
+      setLoadingState("embeddableUrls", true);
+      setErrorState("embeddableUrls", null);
 
-  const fetchBalance = async (): Promise<void> => {
+      try {
+        const response = await createMetronomeEmbeddableLink(
+          config.api_key,
+          config.customer_id,
+          type,
+          theme,
+        );
+
+        if (response.status === "success") {
+          setEmbeddableUrls((prev) => ({
+            ...prev,
+            [type]: response.result,
+          }));
+        } else {
+          throw new Error(
+            response.message || `Failed to get ${type} dashboard`,
+          );
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
+        setErrorState("embeddableUrls", message);
+        console.error(`Error getting ${type} dashboard:`, error);
+      } finally {
+        setLoadingState("embeddableUrls", false);
+      }
+    },
+    [config.api_key, config.customer_id, setLoadingState, setErrorState],
+  );
+
+  // Fetch balance
+  const fetchBalance = useCallback(async () => {
+    setLoadingState("balance", true);
+    setErrorState("balance", null);
+
     try {
       const response = await fetchMetronomeCustomerBalance(
-        metronome_config.api_key,
-        metronome_config.customer_id,
+        config.api_key,
+        config.customer_id,
       );
-      if (response && response.status === "success" && response.result)
-        setBalance({
-          total_granted: response.result.total_granted,
-          total_used: response.result.total_used,
-        });
-    } catch (error) {
-      // return { total_granted: undefined, total_used: undefined } ;
-    }
-  };
 
-  const fetchAlerts = async (): Promise<any> => {
-    try {
-      return await fetchCustomerSpendAlerts(
-        metronome_config.api_key,
-        metronome_config.customer_id,
-      );
+      if (response.status === "success") {
+        setBalance(response.result);
+      } else {
+        throw new Error(response.message || "Failed to fetch balance");
+      }
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      setErrorState("balance", message);
+      console.error("Error fetching balance:", error);
+    } finally {
+      setLoadingState("balance", false);
+    }
+  }, [config.api_key, config.customer_id, setLoadingState, setErrorState]);
+
+  // Fetch alerts
+  const fetchAlerts = useCallback(async () => {
+    setLoadingState("alerts", true);
+    setErrorState("alerts", null);
+
+    try {
+      const response = await fetchCustomerSpendAlerts(
+        config.api_key,
+        config.customer_id,
+      );
+      return response;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      setErrorState("alerts", message);
+      console.error("Error fetching alerts:", error);
+      return null;
+    } finally {
+      setLoadingState("alerts", false);
+    }
+  }, [config.api_key, config.customer_id, setLoadingState, setErrorState]);
+
+  // Create alert
+  const createAlert = useCallback(
+    async (threshold: number): Promise<boolean> => {
+      setLoadingState("alerts", true);
+      setErrorState("alerts", null);
+
+      try {
+        const response = await createCustomerSpendAlert(
+          config.api_key,
+          config.customer_id,
+          threshold,
+        );
+        return response === true;
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
+        setErrorState("alerts", message);
+        console.error("Error creating alert:", error);
+        return false;
+      } finally {
+        setLoadingState("alerts", false);
+      }
+    },
+    [config.api_key, config.customer_id, setLoadingState, setErrorState],
+  );
+
+  // Fetch costs
+  const fetchCosts = useCallback(
+    async (windowSize: "HOUR" | "DAY" = "DAY"): Promise<BreakdownData> => {
+      setLoadingState("costs", true);
+      setErrorState("costs", null);
+
+      try {
+        const response = await fetchMetronomeInvoiceBreakdown(
+          config.api_key,
+          config.customer_id,
+          windowSize,
+        );
+
+        if (response.status === "success") {
+          setCosts(response.result.costs);
+          setUsage(response.result.usage); // Set usage data as well since it comes together
+          return response.result.costs;
+        } else {
+          throw new Error(response.message || "Failed to fetch costs");
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
+        setErrorState("costs", message);
+        console.error("Error fetching costs:", error);
+        const fallback = { items: [], products: {} };
+        setCosts(fallback);
+        return fallback;
+      } finally {
+        setLoadingState("costs", false);
+      }
+    },
+    [config.api_key, config.customer_id, setLoadingState, setErrorState],
+  );
+
+  // Fetch usage (wrapper around fetchCosts since they come together)
+  const fetchUsage = useCallback(
+    async (windowSize: "HOUR" | "DAY" = "DAY"): Promise<BreakdownData> => {
+      await fetchCosts(windowSize); // This will set both costs and usage
+      return usage;
+    },
+    [fetchCosts, usage],
+  );
+
+  // Fetch current spend
+  const fetchCurrentSpend = useCallback(async () => {
+    setLoadingState("currentSpend", true);
+    setErrorState("currentSpend", null);
+
+    try {
+      const response = await fetchCurrentSpendDraftInvoice(
+        config.api_key,
+        config.customer_id,
+      );
+
+      if (response.status === "success") {
+        setCurrentSpend(response.result);
+      } else {
+        throw new Error(response.message || "Failed to fetch current spend");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      setErrorState("currentSpend", message);
+      console.error("Error fetching current spend:", error);
+      setCurrentSpend(null);
+    } finally {
+      setLoadingState("currentSpend", false);
+    }
+  }, [config.api_key, config.customer_id, setLoadingState, setErrorState]);
+
+  // Load all data at once
+  const loadAllData = useCallback(async () => {
+    if (!config.api_key || !config.customer_id) {
+      console.warn("Cannot load data: missing API key or customer ID");
       return;
     }
-  };
 
-  const createAlert = async (threshold: number): Promise<any> => {
-    try {
-      return await createCustomerSpendAlert(
-        metronome_config.api_key,
-        metronome_config.customer_id,
-        threshold,
-      );
-    } catch (error) {
-      return;
-    }
-  };
+    await Promise.allSettled([
+      fetchBalance(),
+      getDashboard("invoices", "light"),
+      fetchCosts(),
+      fetchCurrentSpend(),
+    ]);
+  }, [
+    config.api_key,
+    config.customer_id,
+    fetchBalance,
+    getDashboard,
+    fetchCosts,
+    fetchCurrentSpend,
+  ]);
 
-  const fetchCosts = async (): Promise<Costs> => {
-    try {
-      const response = await fetchMetronomeInvoiceBreakdown(
-        metronome_config.api_key,
-        metronome_config.customer_id,
-        "DAY",
-      );
-      if (response && response.status === "success" && response.result) {
-        setCosts(response.result.costs);
-        setUsage(response.result.usage);
-        return response.result.costs;
-      } else return { items: [], products: [] };
-    } catch (error) {
-      return { items: [], products: [] };
+  // Auto-load data when config changes (if both api_key and customer_id are present)
+  useEffect(() => {
+    if (config.api_key && config.customer_id) {
+      loadAllData();
     }
-  };
+  }, [config.api_key, config.customer_id, loadAllData]);
 
-  const fetchCurrentSpend = async (): Promise<void> => {
-    try {
-      const spend = await fetchCurrentSpendDraftInvoice(
-        metronome_config.api_key,
-        metronome_config.customer_id,
-      );
-      if (spend && spend.total) setCurrentSpend({total: spend.total, productTotals: spend.productTotals} );
-      else setCurrentSpend(undefined);
-    } catch (error) {
-      setCurrentSpend(undefined);
-      return;
-    }
+  const contextValue: MetronomeContextType = {
+    config,
+    balance,
+    currentSpend,
+    embeddableUrls,
+    usage,
+    costs,
+    customers,
+    loading,
+    errors,
+    setConfig,
+    getDashboard,
+    fetchBalance,
+    fetchCosts,
+    fetchUsage,
+    fetchAlerts,
+    createAlert,
+    fetchCurrentSpend,
+    fetchCustomers,
+    reset,
+    loadAllData,
   };
 
   return (
-    <MetronomeContext.Provider
-      value={{
-        balance,
-        embeddable_url,
-        current_spend,
-        usage,
-        metronome_config,
-        costs,
-        customers,
-        setMetronome,
-        getDashboard,
-        fetchBalance,
-        fetchCosts,
-        createAlert,
-        fetchAlerts,
-        fetchCurrentSpend,
-        fetchCustomers,
-      }}
-    >
+    <MetronomeContext.Provider value={contextValue}>
       {children}
     </MetronomeContext.Provider>
   );
 };
 
-// 3. Create a custom hook to access the context
+// Custom hook to access the context
 export const useMetronome = () => {
-  return useContext(MetronomeContext);
+  const context = useContext(MetronomeContext);
+  if (!context) {
+    throw new Error("useMetronome must be used within a MetronomeProvider");
+  }
+  return context;
 };
 
-// const formatUsageGrouped = (usage: any): any => {
-//   const group_values =  usage.reduce((acc: Array<string>, item: any) => { // unique values
-//     if (!acc.includes(item.group_value)) acc.push(item.group_value);
-//     return acc;
-//   }, []);
+// Utility hook for checking if data is ready
+export const useMetronomeReady = () => {
+  const { config, loading } = useMetronome();
 
-//   const timestamps = usage.reduce((acc: Array<string>, item: any) => { // unique timestamps
-//     if (!acc.includes(item.starting_on)) acc.push(item.starting_on);
-//     return acc;
-//   }, []);
+  const isConfigured = Boolean(config.api_key && config.customer_id);
+  const isLoading = Object.values(loading).some(Boolean);
+  const isReady = isConfigured && !isLoading;
 
-//   const data = timestamps.map( (t:string) => {
-//     let values = {};
-//     group_values.forEach((v:string) => {
-//       values[v] = usage.filter((el: any) => el.starting_on === t && el.group_value === v)[0]?.value
-//     })
-//     return {
-//       starting_on: t,
-//       ...values,
-//     }
-//   })
-//   return {data, group_values};
-// }
+  return { isConfigured, isLoading, isReady };
+};
+
+// Utility function to format usage data for charts (moved the commented function)
+export const formatUsageForChart = (
+  usage: any[],
+): { data: any[]; groupValues: string[] } => {
+  if (!usage || usage.length === 0) {
+    return { data: [], groupValues: [] };
+  }
+
+  // Get unique group values
+  const groupValues = usage.reduce((acc: string[], item: any) => {
+    if (item.group_value && !acc.includes(item.group_value)) {
+      acc.push(item.group_value);
+    }
+    return acc;
+  }, []);
+
+  // Get unique timestamps
+  const timestamps = usage.reduce((acc: string[], item: any) => {
+    if (item.starting_on && !acc.includes(item.starting_on)) {
+      acc.push(item.starting_on);
+    }
+    return acc;
+  }, []);
+
+  // Build chart data
+  const data = timestamps.map((timestamp: string) => {
+    const values: Record<string, any> = {};
+
+    groupValues.forEach((groupValue: string) => {
+      const matchingItem = usage.find(
+        (item: any) =>
+          item.starting_on === timestamp && item.group_value === groupValue,
+      );
+      values[groupValue] = matchingItem?.value || 0;
+    });
+
+    return {
+      starting_on: timestamp,
+      ...values,
+    };
+  });
+
+  return { data, groupValues };
+};

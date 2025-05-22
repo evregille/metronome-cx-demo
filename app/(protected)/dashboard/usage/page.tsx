@@ -15,7 +15,7 @@ import { BarChartStacked } from "@/components/charts/bar-chart-stacked";
 import { DashboardHeader } from "@/components/dashboard/header";
 
 export default function Usage() {
-  const { metronome_config, usage, fetchCosts } = useMetronome();
+  const { config, usage, fetchCosts } = useMetronome();
   const [selectedProduct, setSelectedProduct] = useState<string>("all");
   const [groupValues, setGroupValues] = useState<Array<string>>(
     Object.keys(usage.products),
@@ -27,7 +27,7 @@ export default function Usage() {
       const result = await fetchCosts();
       setGroupValues(Object.keys(result.products));
     })();
-  }, [metronome_config]);
+  }, [config]);
 
   const handleSelectProduct = (value: string) => {
     setSelectedProduct(value);
@@ -124,14 +124,14 @@ export default function Usage() {
               </Select>
             </div>
             <>
-              {metronome_config.chart_type === "AreaChart" && (
+              {config.chart_type === "LineChart" && (
                 <AreaChartStacked
                   chartData={usage.items}
                   group_values={groupValues}
                 />
               )}
 
-              {metronome_config.chart_type === "BarChart" && (
+              {config.chart_type === "BarChart" && (
                 <BarChartStacked
                   chartData={usage.items}
                   group_values={groupValues}

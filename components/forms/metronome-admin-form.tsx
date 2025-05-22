@@ -15,28 +15,25 @@ import {
 } from "@/components/ui/select";
 
 export function MetronomeAdminForm() {
-  const { metronome_config, customers, setMetronome, fetchCustomers } =
-    useMetronome();
+  const { config, customers, setConfig, fetchCustomers } = useMetronome();
 
-  const [metronomeApiKey, setMetronomeApiKey] = useState(
-    metronome_config.api_key,
-  );
+  const [metronomeApiKey, setMetronomeApiKey] = useState(config.api_key);
   const [metronomeCustomerID, setMetronomeCustomerID] = useState(
-    metronome_config.customer_id,
+    config.customer_id,
   );
-  const [metronomeChartType, setMetronomeChartType] = useState(
-    metronome_config.chart_type,
-  );
+  const [metronomeChartType, setMetronomeChartType] = useState<
+    "BarChart" | "LineChart" | "PieChart"
+  >(config.chart_type);
 
   useEffect(() => {
     (async () => {
       await fetchCustomers(undefined);
     })();
-  }, []);
+  }, [config.api_key, fetchCustomers]);
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    setMetronome({
+    setConfig({
       api_key: metronomeApiKey,
       customer_id: metronomeCustomerID,
       chart_type: metronomeChartType,
@@ -55,7 +52,9 @@ export function MetronomeAdminForm() {
     }
   };
 
-  const handleSelectChartTypeChange = function (value: string) {
+  const handleSelectChartTypeChange = function (
+    value: "BarChart" | "LineChart" | "PieChart",
+  ) {
     setMetronomeChartType(value);
   };
 
@@ -64,10 +63,6 @@ export function MetronomeAdminForm() {
   };
 
   console.log("cust", metronomeCustomerID);
-  if (metronomeCustomerID)
-    console.log(
-      customers.filter((el) => el.id === metronomeCustomerID)[0].name,
-    );
 
   return (
     <div className={"grid gap-6"}>
@@ -133,8 +128,9 @@ export function MetronomeAdminForm() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={"AreaChart"}>{"AreaChart"}</SelectItem>
-                <SelectItem value={"BarChart"}>{"BarChart"}</SelectItem>
+                <SelectItem value={"LineChart"}>{"Line Chart"}</SelectItem>
+                <SelectItem value={"BarChart"}>{"Bar Chart"}</SelectItem>
+                <SelectItem value={"PieChart"}>{"Pie Chart"}</SelectItem>
               </SelectContent>
             </Select>
 

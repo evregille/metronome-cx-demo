@@ -17,9 +17,8 @@ export function SpendAlerts() {
         setIsSpendAlertOn(true);
         setCurrentThreshold(0);
       }
-      console.log(response);
     })();
-  }, []);
+  }, [fetchAlerts]);
 
   const handleToggle = () => {
     setIsSpendAlertOn(!isSpendAlertOn);

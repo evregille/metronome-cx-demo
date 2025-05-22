@@ -3,12 +3,12 @@
 This example of web portal is taken from the [Next SaaS Starter](https://github.com/mickasmt/next-saas-stripe-starter) and updated to demonstrate Metronome embeddable dashboards and API to build usage billing customer experiences.
 
 Most of the Metronome logic is in the following files:
-- backend-end requests in the `actions/metronome.ts` file
+
+- backend-end requests in the `actions/metronome.ts` file to fetch costs, balance, usage etc.
 - hook for metronome to store the metronome state data in the `hooks/use-metronome-config.tsx` file
 - Metronome components to show balance, spend alerts etc. in the `components/dashboard/metronome` folder
 
 Note that all the requests are assuming currency in Metronome is USD (see [Pricing Units](https://app.metronome.com/offering/pricing-units))
-
 
 ## Author
 

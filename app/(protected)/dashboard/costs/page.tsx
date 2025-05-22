@@ -18,7 +18,7 @@ import { PaymentMethods } from "@/components/dashboard/metronome/payment-methods
 import { SpendAlerts } from "@/components/dashboard/metronome/spend-alerts";
 
 export default function Costs() {
-  const { costs, metronome_config, fetchCosts } = useMetronome();
+  const { costs, config, fetchCosts } = useMetronome();
   const [selectedProduct, setSelectedProduct] = useState<string>("all");
   const [groupValues, setGroupValues] = useState<Array<string>>(
     Object.keys(costs.products),
@@ -68,11 +68,7 @@ export default function Costs() {
         <PaymentMethods />
       </div>
 
-      <div
-        className={
-          "relative flex flex-col overflow-hidden rounded-3xl border shadow-sm"
-        }
-      >
+      <div className="relative flex flex-col overflow-hidden rounded-3xl border shadow-sm">
         <div className="min-h-[150px] items-start space-y-4 bg-muted/50 p-6">
           <p className="flex font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground">
             Daily Breakdown Costs
@@ -129,14 +125,14 @@ export default function Costs() {
             </div>
 
             <>
-              {metronome_config.chart_type === "AreaChart" && (
+              {config.chart_type === "LineChart" && (
                 <AreaChartStacked
                   chartData={costs.items}
                   group_values={groupValues}
                 />
               )}
 
-              {metronome_config.chart_type === "BarChart" && (
+              {config.chart_type === "BarChart" && (
                 <BarChartStacked
                   chartData={costs.items}
                   group_values={groupValues}

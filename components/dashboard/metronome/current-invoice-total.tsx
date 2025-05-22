@@ -8,10 +8,7 @@ interface CurrentSpend {
 }
 
 export function CurrentInvoiceTotal() {
-  const { current_spend, fetchCurrentSpend } = useMetronome() as { 
-    current_spend: CurrentSpend | undefined; 
-    fetchCurrentSpend: () => Promise<void>; 
-  };
+  const { currentSpend, fetchCurrentSpend } = useMetronome();
 
   useEffect(() => {
     (async () => {
@@ -38,32 +35,37 @@ export function CurrentInvoiceTotal() {
           Total Current Invoice
         </p>
 
-        <div className="w-full text-3xl font-semibold leading-6 mb-4">
-          ${" "}
-          {current_spend === undefined || current_spend.total === undefined
-            ? 0
-            : formatCurrency(current_spend.total)}
+        <div className="mb-4 w-full text-3xl font-semibold leading-6">
+          $ {!currentSpend ? 0 : formatCurrency(currentSpend.total)}
         </div>
-        
+
         {/* Product breakdown section */}
-        {current_spend?.productTotals && Object.keys(current_spend.productTotals).length > 0 && (
-          <div className="pt-4 border-t border-muted">
-            <p className="font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3">
-              Breakdown by Product
-            </p>
-            
-            <div className="space-y-2">
-              {Object.entries(current_spend.productTotals).map(([productName, total], index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">{productName}</span>
-                  <span className="text-sm font-medium">
-                    $ {formatCurrency(total)}
-                  </span>
-                </div>
-              ))}
+        {currentSpend?.productTotals &&
+          Object.keys(currentSpend.productTotals).length > 0 && (
+            <div className="border-t border-muted pt-4">
+              <p className="mb-3 font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                Breakdown by Product
+              </p>
+
+              <div className="space-y-2">
+                {Object.entries(currentSpend.productTotals).map(
+                  ([productName, total], index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="text-sm text-muted-foreground">
+                        {productName}
+                      </span>
+                      <span className="text-sm font-medium">
+                        $ {formatCurrency(total)}
+                      </span>
+                    </div>
+                  ),
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
     </div>
   );
