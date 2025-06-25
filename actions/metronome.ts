@@ -127,21 +127,35 @@ export async function createMetronomeEmbeddableLink(
     const client = getMetronomeClient(api_key);
     const customerId = getCustomerId(customer_id);
 
+    console.log("Creating embeddable link with theme:", resolvedTheme);
+
     const color_overrides =
       resolvedTheme === "dark"
-        ? Object.entries(DARK_THEME_COLORS).map(([name, value]) => ({
-            name: name as ColorOverride["name"],
-            value,
-          }))
+        ? [
+            { name: "Gray_dark" as const, value: DARK_THEME_COLORS.Gray_dark },
+            { name: "Gray_medium" as const, value: DARK_THEME_COLORS.Gray_medium },
+            { name: "Gray_light" as const, value: DARK_THEME_COLORS.Gray_light },
+            { name: "Gray_extralight" as const, value: DARK_THEME_COLORS.Gray_extralight },
+            { name: "White" as const, value: DARK_THEME_COLORS.White },
+            { name: "Primary_medium" as const, value: DARK_THEME_COLORS.Primary_medium },
+            { name: "Primary_light" as const, value: DARK_THEME_COLORS.Primary_light },
+            { name: "Primary_green" as const, value: DARK_THEME_COLORS.Primary_green },
+            { name: "Primary_red" as const, value: DARK_THEME_COLORS.Primary_red },
+          ]
         : undefined;
+
+    console.log("Color overrides:", color_overrides);
 
     const response = await client.dashboards.getEmbeddableURL({
       customer_id: customerId,
       dashboard: type,
       color_overrides,
     });
+    
+    console.log("Response received:", response);
     return { status: "success", result: response.data.url };
   } catch (error) {
+    console.error("Error creating embeddable link:", error);
     return {
       status: "error",
       message: error instanceof Error ? error.message : "Unknown error",

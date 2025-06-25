@@ -11,9 +11,13 @@ export function Invoices() {
 
   useEffect(() => {
     (async () => {
+      console.log("Invoices component - Theme changed to:", resolvedTheme);
       await getDashboard("invoices", resolvedTheme);
     })();
   }, [config, resolvedTheme, getDashboard]);
+
+  console.log("Invoices component - Current theme:", resolvedTheme);
+  console.log("Invoices component - Embeddable URL:", embeddableUrls.invoices);
 
   return (
     <div className="relative flex flex-col overflow-hidden rounded-3xl border shadow-sm">

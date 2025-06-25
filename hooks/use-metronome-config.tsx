@@ -421,7 +421,6 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
 
     await Promise.allSettled([
       fetchBalance(),
-      getDashboard("invoices", "light"),
       fetchCosts(),
       fetchCurrentSpend(),
     ]);
@@ -429,7 +428,6 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
     config.api_key,
     config.customer_id,
     fetchBalance,
-    getDashboard,
     fetchCosts,
     fetchCurrentSpend,
   ]);

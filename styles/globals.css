@@ -123,6 +123,16 @@
     @apply ml-[-50px] mt-[-4px];
     content: counter(step);
   }
+
+  /* Force iframe to be transparent */
+  iframe {
+    background-color: transparent !important;
+  }
+
+  /* Dark mode iframe container */
+  .dark iframe {
+    background-color: transparent !important;
+  }
 }
 
 .text-gradient_indigo-purple {
