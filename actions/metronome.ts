@@ -40,7 +40,7 @@ const DARK_THEME_COLORS = {
 };
 
 // Types
-type DashboardType = "invoices" | "usage";
+type DashboardType = "invoices" | "usage" | "commits_and_credits";
 type ColorOverride = {
   name:
     | "Gray_dark"
@@ -146,7 +146,7 @@ export async function createMetronomeEmbeddableLink(
 
     console.log("Color overrides:", color_overrides);
 
-    const response = await client.dashboards.getEmbeddableURL({
+    const response = await client.v1.dashboards.getEmbeddableURL({
       customer_id: customerId,
       dashboard: type,
       color_overrides,
@@ -171,7 +171,7 @@ export async function fetchMetronomeCustomerBalance(
     const client = getMetronomeClient(api_key);
     const customerId = getCustomerId(customer_id);
 
-    const response = await client.contracts.listBalances({
+    const response = await client.v1.contracts.listBalances({
       customer_id: customerId,
       covering_date: new Date().toISOString(),
       include_archived: false,
@@ -235,7 +235,8 @@ export async function fetchMetronomeInvoiceBreakdown(
     const { start, end } = interval(30);
     let data: InvoiceListBreakdownsResponse[] = [];
 
-    let response = await client.customers.invoices.listBreakdowns(customerId, {
+    let response = await client.v1.customers.invoices.listBreakdowns({
+      customer_id: customerId,
       window_size,
       starting_on: new Date(start).toISOString(),
       ending_before: new Date(end).toISOString(),
@@ -244,7 +245,8 @@ export async function fetchMetronomeInvoiceBreakdown(
     // Collect all pages of data
     data = [...response.data];
     while (response.next_page) {
-      response = await client.customers.invoices.listBreakdowns(customerId, {
+      response = await client.v1.customers.invoices.listBreakdowns({
+        customer_id: customerId,
         window_size,
         starting_on: new Date(start).toISOString(),
         ending_before: new Date(end).toISOString(),
@@ -277,7 +279,7 @@ export async function fetchCustomerSpendAlerts(
   try {
     const client = getMetronomeClient(api_key);
     const customerId = getCustomerId(customer_id); // retrieve all alerts for customer
-    const response = await client.customers.alerts.list({
+    const response = await client.v1.customers.alerts.list({
       customer_id: customerId,
     });
     // filter spend alert with name
@@ -302,7 +304,7 @@ export async function createCustomerSpendAlert(
   try {
     const client = getMetronomeClient(api_key);
     const customerId = getCustomerId(customer_id);
-    const response = await client.alerts.create({
+    const response = await client.v1.alerts.create({
       customer_id: customerId,
       alert_type: "spend_threshold_reached",
       name: CUSTOM_SPEND_THRESHOLD_ALERT_NAME,
@@ -325,7 +327,8 @@ export async function fetchCurrentSpendDraftInvoice(
   try {
     const client = getMetronomeClient(api_key);
     const customerId = getCustomerId(customer_id);
-    const invoices = await client.customers.invoices.list(customerId, {
+    const invoices = await client.v1.customers.invoices.list({
+      customer_id: customerId,
       status: "DRAFT",
     });
     let total = 0,
@@ -359,10 +362,10 @@ export async function fetchMetronomeCustomers(
   try {
     const client = getMetronomeClient(api_key);
 
-    let response = await client.customers.list();
+    let response = await client.v1.customers.list();
     let data = [...response.data];
     while (response.next_page) {
-      response = await client.customers.list({
+      response = await client.v1.customers.list({
         next_page: response.next_page,
       });
       data = [...data, ...response.data];

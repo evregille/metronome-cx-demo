@@ -45,7 +45,7 @@ interface BreakdownData {
 interface EmbeddableUrls {
   invoices: string;
   usage: string;
-  credits: string;
+  commits_and_credits: string;
 }
 
 interface CurrentSpend {
@@ -93,7 +93,7 @@ interface MetronomeContextType {
   // Actions
   setConfig: (config: MetronomeConfig) => void;
   getDashboard: (
-    type: "invoices" | "usage" | "credits",
+    type: "invoices" | "usage" | "commits_and_credits",
     theme?: string,
   ) => Promise<void>;
   fetchBalance: () => Promise<void>;
@@ -131,7 +131,7 @@ const defaultContext: MetronomeContextType = {
   config: { api_key: "", customer_id: "", chart_type: "BarChart" },
   balance: null,
   currentSpend: null,
-  embeddableUrls: { invoices: "", usage: "", credits: "" },
+  embeddableUrls: { invoices: "", usage: "", commits_and_credits: "" },
   usage: { items: [], products: {} },
   costs: { items: [], products: {} },
   customers: [],
@@ -189,7 +189,7 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
   // Reset all data
   const reset = useCallback(() => {
     setBalance(null);
-    setEmbeddableUrls({ invoices: "", usage: "", credits: "" });
+    setEmbeddableUrls({ invoices: "", usage: "", commits_and_credits: "" });
     setUsage({ items: [], products: {} });
     setCosts({ items: [], products: {} });
     setCurrentSpend(null);
@@ -236,7 +236,7 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Get dashboard embeddable URL
   const getDashboard = useCallback(
-    async (type: "invoices" | "usage", theme?: string) => {
+    async (type: "invoices" | "usage" | "commits_and_credits", theme?: string) => {
       setLoadingState("embeddableUrls", true);
       setErrorState("embeddableUrls", null);
 

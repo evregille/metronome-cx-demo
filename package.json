@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@metronome/sdk": "^0.3.0",
     "@radix-ui/react-accessible-icon": "^1.1.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
@@ -84,7 +85,6 @@
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
-    "@metronome/sdk": "0.1.0-beta.5",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/typography": "^0.5.13",
     "@types/node": "^20.14.11",

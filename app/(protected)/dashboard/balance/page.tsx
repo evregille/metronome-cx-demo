@@ -3,6 +3,7 @@
 import { DashboardHeader } from "@/components/dashboard/header";
 import { AutoTopup } from "@/components/dashboard/metronome/auto-topup";
 import { Balance } from "@/components/dashboard/metronome/balance";
+import { CommitsAndCredits } from "@/components/dashboard/metronome/CommitsAndCredits";
 import { Invoices } from "@/components/dashboard/metronome/invoices";
 import { Topup } from "@/components/dashboard/metronome/topup";
 
@@ -18,6 +19,10 @@ export default function BillingPage() {
             <AutoTopup />
           </>
         </div>
+      </div>
+
+      <div className="grid gap-8">
+        <CommitsAndCredits />
       </div>
 
       <div className="grid gap-8">
