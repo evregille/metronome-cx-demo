@@ -103,6 +103,7 @@ interface MetronomeContextType {
   createAlert: (threshold: number) => Promise<boolean>;
   fetchCurrentSpend: () => Promise<void>;
   fetchCustomers: (apiKey?: string) => Promise<void>;
+  predictCost: (events: any[]) => Promise<any>;
   reset: () => void;
   loadAllData: () => Promise<void>;
 }
@@ -146,6 +147,7 @@ const defaultContext: MetronomeContextType = {
   createAlert: async () => false,
   fetchCurrentSpend: async () => {},
   fetchCustomers: async () => {},
+  predictCost: async () => ({}),
   reset: () => {},
   loadAllData: async () => {},
 };
@@ -412,6 +414,55 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [config.api_key, config.customer_id, setLoadingState, setErrorState]);
 
+  // Predict cost for web services
+  const predictCost = useCallback(async (events: any[]) => {
+    
+    try {
+
+      const response = await fetch(`/api/metronome/predict-cost`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          events, 
+          customerId: config.customer_id, 
+          apiKey: config.api_key 
+        }),
+      });
+
+      console.log("Context - API route response status:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Context - API route error:", errorText);
+        throw new Error(`API route error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("Context - API route response data:", data);
+      console.log("Context - Response structure check:");
+      console.log("  - data exists:", !!data);
+      console.log("  - data.total exists:", !!data.total);
+      console.log("  - data.lineItems exists:", !!data.lineItems);
+      console.log("  - data.total value:", data.total);
+      console.log("  - data.lineItems length:", data.lineItems?.length);
+
+      if (!data.total || !data.lineItems) {
+        console.error("Context - Invalid response structure:", data);
+        throw new Error("Invalid response structure from API route");
+      }
+
+      return {
+        total: data.total,
+        lineItems: data.lineItems,
+      };
+    } catch (error) {
+      console.error("Context - Error in predictCost:", error);
+      throw error;
+    }
+  }, [config.api_key, config.customer_id]);
+
   // Load all data at once
   const loadAllData = useCallback(async () => {
     if (!config.api_key || !config.customer_id) {
@@ -458,6 +509,7 @@ export const MetronomeProvider: React.FC<{ children: React.ReactNode }> = ({
     createAlert,
     fetchCurrentSpend,
     fetchCustomers,
+    predictCost,
     reset,
     loadAllData,
   };

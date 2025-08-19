@@ -6,6 +6,7 @@ import { Balance } from "@/components/dashboard/metronome/balance";
 import { CommitsAndCredits } from "@/components/dashboard/metronome/CommitsAndCredits";
 import { Invoices } from "@/components/dashboard/metronome/invoices";
 import { Topup } from "@/components/dashboard/metronome/topup";
+import { WebServicePrediction } from "@/components/dashboard/metronome/web-service-prediction";
 
 export default function BillingPage() {
   return (
@@ -27,6 +28,10 @@ export default function BillingPage() {
 
       <div className="grid gap-8">
         <Invoices />
+      </div>
+
+      <div className="grid gap-8">
+        <WebServicePrediction />
       </div>
     </>
   );
