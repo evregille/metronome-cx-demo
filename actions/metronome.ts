@@ -127,8 +127,6 @@ export async function createMetronomeEmbeddableLink(
     const client = getMetronomeClient(api_key);
     const customerId = getCustomerId(customer_id);
 
-    console.log("Creating embeddable link with theme:", resolvedTheme);
-
     const color_overrides =
       resolvedTheme === "dark"
         ? [
@@ -144,15 +142,12 @@ export async function createMetronomeEmbeddableLink(
           ]
         : undefined;
 
-    console.log("Color overrides:", color_overrides);
-
     const response = await client.v1.dashboards.getEmbeddableURL({
       customer_id: customerId,
       dashboard: type,
       color_overrides,
     });
     
-    console.log("Response received:", response);
     return { status: "success", result: response.data.url };
   } catch (error) {
     console.error("Error creating embeddable link:", error);
@@ -334,13 +329,12 @@ export async function fetchCurrentSpendDraftInvoice(
     let total = 0,
       productTotals: Record<string, number> = {};
     if (invoices?.data) {
-      // Calculate total amount from all invoices
-      total = invoices.data.reduce((acc, inv) => acc + inv.total, 0);
-
-      // Calculate totals by product
+      // Calculate total amount from all line items (before commits and credits)
       invoices.data.forEach((inv) => {
         inv.line_items.forEach((item: any) => {
+          // Only include positive line items (charges, not credits)
           if (item.total > 0) {
+            total += item.total;
             productTotals[item.name] =
               (productTotals[item.name] || 0) + item.total;
           }
