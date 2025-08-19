@@ -15,7 +15,7 @@ export function PaymentMethods() {
     >
       <div className="min-h-full items-start space-y-4 bg-muted/50 p-6">
         <p className="flex font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground">
-          Payment Methods
+          Manage Payment Methods
         </p>
         
         <div className="flex flex-col gap-4">
@@ -35,7 +35,7 @@ export function PaymentMethods() {
           
           {/* Add New Card Button */}
           <button className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-medium hover:bg-primary/90 transition-colors">
-            + Add New Payment Method
+            Update Payment Method
           </button>
         </div>
       </div>

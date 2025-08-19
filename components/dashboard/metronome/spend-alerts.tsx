@@ -39,7 +39,7 @@ export function SpendAlerts() {
         <div className="flex pt-[5%] text-left text-3xl font-semibold leading-6">
           <Switch checked={isSpendAlertOn} onCheckedChange={handleToggle} />
           <Label className="indent-1.5 align-middle" htmlFor="name">
-            Turn {isSpendAlertOn === true ? "OFF" : "ON"} Spend Alerts
+            Turn {isSpendAlertOn === true ? "OFF" : "ON"} Budgets Notifications
           </Label>
         </div>
 

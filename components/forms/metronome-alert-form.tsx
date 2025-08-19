@@ -24,51 +24,59 @@ export function MetronomeAlertForm() {
   };
 
   return (
-    <div className={"grid gap-6"}>
+    <div className="grid gap-6">
       <form onSubmit={onSubmit}>
         <div className="grid gap-6">
-          <div className="grid gap-6">
-            <Label className="" htmlFor="name">
-              Spend Threshold Notification ($)
+          {/* Budget Input Row */}
+          <div className="flex items-center gap-4">
+            <Label className="whitespace-nowrap" htmlFor="value">
+              Budget ($)
             </Label>
-            
-            {/* Amount and Workspace in same row */}
-            <div className="flex gap-4">
-              <div className="flex-1">
+            <div className="flex-1">
+              <div className="relative">
                 <Input
                   id="value"
-                  className="w-full"
+                  className="w-full pl-8"
                   size={32}
                   value={value}
                   onChange={handleInputChange}
-                  placeholder="Enter amount"
+                  placeholder="0.00"
+                  type="number"
+                  step="0.01"
+                  min="0"
                 />
               </div>
-              
-              <div className="flex-1">
-                <Select value={selectedWorkspace} onValueChange={handleWorkspaceChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select workspace" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Projects</SelectItem>
-                    <SelectItem value="workspace1">Project 1</SelectItem>
-                    <SelectItem value="workspace2">Project 2</SelectItem>
-                    <SelectItem value="workspace3">Project 3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
-
-            <Button
-              type="submit"
-              variant={true ? "default" : "disable"}
-              disabled={false}
-              className="w-[100px] shrink-0 px-3 sm:w-[150px]"
-            >
-              Create Notification
-            </Button>
           </div>
+
+          {/* Workspace Selection Row */}
+          <div className="flex items-center gap-4">
+            <Label className="whitespace-nowrap" htmlFor="workspace">
+              Apply budget to
+            </Label>
+            <div className="flex-1">
+              <Select value={selectedWorkspace} onValueChange={handleWorkspaceChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select workspace" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Workspaces</SelectItem>
+                  <SelectItem value="workspace1">Workspace 1</SelectItem>
+                  <SelectItem value="workspace2">Workspace 2</SelectItem>
+                  <SelectItem value="workspace3">Workspace 3</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            variant="default"
+            className="w-[150px]"
+          >
+            Create Budget
+          </Button>
         </div>
       </form>
     </div>
