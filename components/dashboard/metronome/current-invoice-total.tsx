@@ -32,7 +32,7 @@ export function CurrentInvoiceTotal() {
     >
       <div className="min-h-full items-start space-y-4 bg-muted/50 p-6">
         <p className="flex font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground">
-          Total Current Invoice
+          Total Current Spend
         </p>
 
         <div className="mb-4 w-full text-3xl font-semibold leading-6">

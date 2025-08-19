@@ -51,10 +51,10 @@ export function MetronomeAlertForm() {
                     <SelectValue placeholder="Select workspace" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Workspaces</SelectItem>
-                    <SelectItem value="workspace1">Workspace 1</SelectItem>
-                    <SelectItem value="workspace2">Workspace 2</SelectItem>
-                    <SelectItem value="workspace3">Workspace 3</SelectItem>
+                    <SelectItem value="all">All Projects</SelectItem>
+                    <SelectItem value="workspace1">Project 1</SelectItem>
+                    <SelectItem value="workspace2">Project 2</SelectItem>
+                    <SelectItem value="workspace3">Project 3</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
