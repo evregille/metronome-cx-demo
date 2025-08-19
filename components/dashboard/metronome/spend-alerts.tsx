@@ -32,7 +32,7 @@ export function SpendAlerts() {
     >
       <div className="min-h-[150px] items-start space-y-4 bg-muted/50 p-6">
         <p className="flex font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground">
-          Spend Limits
+          Set Budgets
         </p>
 
         {/* Switch */}
